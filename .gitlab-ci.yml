@@ -1,0 +1,12 @@
+image: google/cloud-sdk:alpine
+
+deploy_service_production:
+  stage: deploy
+  script:
+  - export CB=$(echo $CI_COMMIT_BRANCH | tr / -)
+  - echo $APP_ENGINE_SERVICE_ACCOUNT > /tmp/$CI_PIPELINE_ID.json
+  - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
+  - gcloud --quiet --project $APP_ENGINE_PROJECT_ID app deploy app.yaml --version=$CB
+
+after_script:
+- rm /tmp/$CI_PIPELINE_ID.json
